@@ -68,6 +68,7 @@ Inside the project, the key directories will be:
  ├── tweet
  │   ├── [id]
  │   │   └── page.js    (Individual tweet page)
+```
 
 ---
 
@@ -84,7 +85,6 @@ export async function GET() {
   return new Response(JSON.stringify(tweets), { status: 200 });
 }
 ```
-
 ---
 
 ### **3. Display Tweets on the Home Page**
