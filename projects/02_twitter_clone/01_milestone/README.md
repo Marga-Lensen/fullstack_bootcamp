@@ -586,6 +586,22 @@ Next Milestone, we will:
 
 ---
 
+## Note about TypeScript in this project
+
+In the original version of this material, the examples used .js files such as layout.js and page.js.
+In the current Next.js setup, the project is created with TypeScript, so you will see files like:
+
+app/layout.tsx instead of app/layout.js
+
+app/page.tsx instead of app/page.js
+
+app/api/.../route.ts instead of route.js
+
+The folder structure and routing concepts are exactly the same.
+Whenever the README mentions .js files, you can apply the same idea using the existing .tsx (or .ts) files in your project. 
+
+---
+
 ## **🔹 Additional Learning Resources**
 
 📘 **Next.js App Router Docs:** [https://nextjs.org/docs/app](https://nextjs.org/docs/app)  
