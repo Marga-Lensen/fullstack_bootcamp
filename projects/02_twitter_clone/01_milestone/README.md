@@ -65,9 +65,9 @@ Inside the project, the key directories will be:
 /app
  ├── layout.js      (Defines global layout)
  ├── page.js        (Home page)
- ├── /tweet
- │   ├── [id].js    (Individual tweet page)
-```
+ ├── tweet
+ │   ├── [id]
+ │   │   └── page.js    (Individual tweet page)
 
 ---
 
