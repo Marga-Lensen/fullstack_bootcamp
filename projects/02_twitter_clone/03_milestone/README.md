@@ -10,6 +10,7 @@ By the end of Milestone 3, you should:
 - Allow the user to see the tweets they created from the database
 - Allow up votes / down votes to be stored in the database
 
+
 # Introduction to databases
 
 ## What is a Database?
@@ -61,29 +62,27 @@ Non-Relational Databases don't use traditional tables, they use a variety of oth
 
 Examples: Document-based: MongoDB, Key-Value: Redis, Graph: Neo4j
 
-
 ### **Key Features of NoSQL Databases**
 
 - **Schema-less data storage** 🏗️ → No rigid structure like SQL tables.
 - **Horizontal scalability** 📈 → Data can be distributed across multiple servers.
-- **High availability & performance** ⚡ → Optimized for fast data retrieval.
+- **High availability \& performance** ⚡ → Optimized for fast data retrieval.
 - **Variety of models** 🎭 → Document, Key-Value, Graph, and Column-based storage.
 
 
-## **Why NoSQL & MongoDB?**
+## **Why NoSQL \& MongoDB?**
 
 Traditional SQL databases use **tables and relationships**, while NoSQL databases like **MongoDB** use **documents and collections**. This makes NoSQL **flexible** and **scalable**, especially for dynamic applications like our Library App.
 
 ### **MongoDB vs SQL: Key Differences**
 
-| Feature         | SQL (Relational DB)             | MongoDB (NoSQL)                                            |
-| --------------- | ------------------------------- | ---------------------------------------------------------- |
-| **Schema**      | Fixed schema                    | Dynamic schema                                             |
-| **Data Model**  | Tables & Rows                   | JSON-like Documents                                        |
-| **Scalability** | Vertical Scaling                | Horizontal Scaling                                         |
-| **Joins**       | Uses relationships              | Embedded documents                                         |
-| **Best for**    | Structured data (e.g., Banking) | Unstructured data (e.g., Social Media, Content Management) |
-
+| Feature | SQL (Relational DB) | MongoDB (NoSQL) |
+| :-- | :-- | :-- |
+| **Schema** | Fixed schema | Dynamic schema |
+| **Data Model** | Tables \& Rows | JSON-like Documents |
+| **Scalability** | Vertical Scaling | Horizontal Scaling |
+| **Joins** | Uses relationships | Embedded documents |
+| **Best for** | Structured data (e.g., Banking) | Unstructured data (e.g., Social Media, Content Management) |
 
 MongoDB stores data in **documents** (JSON format), which allows us to **store book details** in an easy-to-query structure.
 
@@ -119,17 +118,18 @@ Note that we are just looking at the data, because there is _no schema inside th
 }
 ```
 
+
 # Using databases in Your App
 
-There are many ways of using databases in our app, the main way of doing this using an _ORM_
+There are many ways of using databases in our app, the main way of doing this using an _ODM_
 
-## ORM
+## [ODM](https://www.mongodb.com/docs/drivers/odm/)
 
-An ORM (Object-Relational Mapper) is a library that lets you interact with your database using your programming language’s objects and classes, instead of writing raw queries. Much easier and safer for beginners, and often cleaner in large applications.
+An ODM (Object Data Modeling library) is a library that lets you interact with your database using your programming language’s objects and classes, instead of writing raw queries. Much easier and safer for beginners, and often cleaner in large applications.
 
 These libraries help you manage your database from your app a lot easier than talking to the DB directly.
 
-For this project we are going to use _MongoDB_ with _Mongoose_ ORM
+For this project we are going to use _MongoDB_ with _Mongoose_ ODM
 
 ## Setup DB
 
@@ -142,11 +142,8 @@ There are 2 main ways to setup a database for this project:
 Using a cloud service has many advantages:
 
 - You can access the database from anywhere
-- Mongo wil handle the updates / backups for you
-
-But also has advantages
-
-- You have to pay for it 💰
+- Mongo will handle the updates / backups for you
+- MongoDB Atlas also offers a [free tier](https://www.mongodb.com/pricing) for development and learning.
 
 If you are shipping an application to production, you should use a _managed_ database, since it makes your life easier. However, to get started, you can also use a local db.
 
@@ -163,6 +160,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+
 
 volumes:
   mongo-data:
@@ -184,16 +182,18 @@ Mongoose is an **Object Data Modeling (ODM) library** for MongoDB in **Node.js**
 
 ### **Why Use Mongoose?**
 
-✅ **Provides schema validation** to ensure data consistency  
-✅ **Simplifies database interactions** with an easy-to-use API  
+✅ **Provides schema validation** to ensure data consistency
+✅ **Simplifies database interactions** with an easy-to-use API
 ✅ **Handles relationships** between different data models
 
 ## Connecting to the DB
 
 You can use the following code to connect to the DB, you can put this in any file you want outside of the `app` folder, usually something like `lib/db.js`
+
 ```js
 import mongoose from "mongoose";
 import assert from "node:assert";
+
 
 // caching for local development
 let cached = global.mongoose;
@@ -201,10 +201,12 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
+
 export async function makeSureDbIsReady() {
   if (cached.conn) {
     return cached.conn;
   }
+
 
   const MONGODB_URI = process.env.MONGODB_URI;
   assert(
@@ -212,9 +214,11 @@ export async function makeSureDbIsReady() {
     "Please define the MONGODB_URI environment variable inside .env.local"
   );
 
+
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, { bufferCommands: false });
   }
+
 
   cached.conn = await cached.promise;
   return cached.conn;
@@ -223,12 +227,11 @@ export async function makeSureDbIsReady() {
 
 Anytime you want to talk to the database, make sure to `await makeSureDbIsReady()` first!
 
-
-
 ## Defining schemas
 
 ```js
 import mongoose from "mongoose";
+
 
 const CompanySchema = new mongoose.Schema({
   name: {
@@ -247,35 +250,35 @@ const CompanySchema = new mongoose.Schema({
   },
 });
 
+
 // we have to define it this way because of hot reloading
 export let Company =
   mongoose.models.Company ?? mongoose.model("Company", CompanySchema);
 ```
 
-Now our ORM knows we have a `Company` collection, and each company has a name, an industry, and the year it was founded.
+Now our Mongoose model knows the `Company` collection, and each company has a name, an industry, and the year it was founded.
 
 Remember, you need to `await makeSureDbIsReady()` before calling any of the operations below:
 
+***
 
----
+## **CRUD Operations with MongoDB \& Mongoose**
 
+Now that our database is connected, let's implement **CRUD (Create, Read, Update, Delete)** operations to manage books in our Library App.
 
-## **CRUD Operations with MongoDB & Mongoose**
-
-Now that our database is connected, let's implement **CRUD (Create, Read, Update, Delete) operations** to manage books in our Library App.
-
----
+***
 
 ## **1️⃣ Understanding CRUD Operations**
 
-| Operation  | HTTP Method      | Description                       |
-| ---------- | ---------------- | --------------------------------- |
-| **Create** | `POST`           | Add a new company to the database    |
-| **Read**   | `GET`            | Retrieve company from the database  |
+| Operation | HTTP Method | Description |
+| :-- | :-- | :-- |
+| **Create** | `POST` | Add a new company to the database |
+| **Read** | `GET` | Retrieve company from the database |
 | **Update** | `PUT` or `PATCH` | Modify an existing company's details |
-| **Delete** | `DELETE`         | Remove a company from the database   |
+| **Delete** | `DELETE` | Remove a company from the database |
 
----
+
+***
 
 ## **2️⃣ Creating API Routes for CRUD Operations**
 
@@ -299,9 +302,10 @@ const company = await Company.create({
   industry: "AutoMobile",
   founded_year: 1990,
 });
-// company is an ORM object, we can convert it to a normal object by calling
+// company is a Mongoose document, we can convert it to a normal object by calling
 company.toObject();
 ```
+
 
 ### Read
 
@@ -318,6 +322,7 @@ audi.founded_year = 1950;
 await audi.save();
 ```
 
+
 ### Delete
 
 ```js
@@ -333,6 +338,7 @@ await Company.findOneAndDelete({name: "Audi"});
 import connectToDatabase from "@/lib/mongodb";
 import Book from "@/models/Book";
 
+
 export async function POST(req) {
   await connectToDatabase();
   const body = await req.json();
@@ -346,6 +352,7 @@ export async function POST(req) {
   }
 }
 ```
+
 
 ### **📌 Read All Books (`GET`)**
 
@@ -362,6 +369,7 @@ export async function GET(req) {
   }
 }
 ```
+
 
 ### **📌 Update a Book (`PUT` or `PATCH`)**
 
@@ -381,6 +389,7 @@ export async function PUT(req) {
   }
 }
 ```
+
 
 ### **📌 Delete a Book (`DELETE`)**
 
@@ -402,8 +411,8 @@ export async function DELETE(req) {
 }
 ```
 
----
 
+***
 
 ## **4️⃣ Testing API Routes with Postman or Thunder Client**
 
@@ -413,15 +422,17 @@ export async function DELETE(req) {
 2. Set the method to `POST`.
 3. Use the URL: `http://localhost:3000/api/books`
 4. Set the request body to JSON:
-   ```json
-   {
-     "title": "The Hobbit",
-     "author": "J.R.R. Tolkien",
-     "publishedYear": 1937,
-     "coverImage": "https://example.com/hobbit.jpg",
-     "description": "A classic fantasy novel."
-   }
-   ```
+
+```json
+{
+  "title": "The Hobbit",
+  "author": "J.R.R. Tolkien",
+  "publishedYear": 1937,
+  "coverImage": "https://example.com/hobbit.jpg",
+  "description": "A classic fantasy novel."
+}
+```
+
 5. Click **Send** → Expect a `201 Created` response.
 
 ### **Testing a `GET` Request**
@@ -435,12 +446,14 @@ export async function DELETE(req) {
 1. Set the method to `PUT`.
 2. Use the URL: `http://localhost:3000/api/books`
 3. Set the request body:
-   ```json
-   {
-     "id": "64b2ff...",
-     "title": "The Hobbit - Updated Edition"
-   }
-   ```
+
+```json
+{
+  "id": "64b2ff...",
+  "title": "The Hobbit - Updated Edition"
+}
+```
+
 4. Click **Send** → Expect a `200 OK` response with updated data.
 
 ### **Testing a `DELETE` Request**
@@ -448,12 +461,14 @@ export async function DELETE(req) {
 1. Set the method to `DELETE`.
 2. Use the URL: `http://localhost:3000/api/books`
 3. Set the request body:
-   ```json
-   { "id": "64b2ff..." }
-   ```
+
+```json
+{ "id": "64b2ff..." }
+```
+
 4. Click **Send** → Expect a `200 OK` confirmation.
 
----
+***
 
 ## **5️⃣ Frontend Integration (Fetching Books in Next.js)**
 
@@ -465,8 +480,10 @@ Inside `/app/library/page.js`, add:
 "use client";
 import { useEffect, useState } from "react";
 
+
 export default function Library() {
   const [books, setBooks] = useState([]);
+
 
   useEffect(() => {
     async function fetchBooks() {
@@ -476,6 +493,7 @@ export default function Library() {
     }
     fetchBooks();
   }, []);
+
 
   return (
     <div>
@@ -492,9 +510,10 @@ export default function Library() {
 }
 ```
 
----
 
-# **Conclusion - NoSQL & Database**
+***
+
+# **Conclusion - NoSQL \& Database**
 
 ## **Key Takeaways from This Milestone**
 
@@ -509,3 +528,20 @@ export default function Library() {
 ### Task
 
 Take the time, go through the examples from next.js, this is a good example on how to learn from other people's code. update your code to save the user's tweets and read them from the DB.
+
+[Getting Started with Next.js - official instructions](https://nextjs.org/docs/app/getting-started)
+
+---
+
+## READ THE DOCS, TEST YOURSELF & LEARN 🤓
+
+- [Is Mongoose an ORM or ODM?](https://medium.com/@abhikshirsagar1999/is-mongoose-an-orm-or-odm-651c9d14e513)
+
+- [ORMs, ODMs, and Libraries](https://www.mongodb.com/docs/drivers/odm/)
+
+- [Quizlet - 54 Qs on Milestone 3](https://quizlet.com/de/1180898068/mongodb-flash-cards/?funnelUUID=ed8eba12-6b0f-466d-80c4-a11c63ab5350)
+  
+- [Next.js documentation](https://nextjs.org/docs)
+
+
+<div align="center">⁂</div>
