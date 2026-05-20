@@ -22,13 +22,15 @@ Next.js allows us to create **API routes** directly in our project without needi
 
 ### **Creating an API Route**
 📁 **Project Structure**
+
 ```
-/app
- ├── /api
- │   ├── /tweets
- │   │   ├── route.js  (Handles all tweet operations)
- │   │   ├── [id].js   (Handles individual tweet requests)
-```
+app/
+└── api/
+    └── tweets/
+        ├── route.js        # Handles all tweets
+        └── [id]/
+            └── route.js    # Handles a single tweet
+ ```
 
 📌 **Example: Fetching All Tweets** (`app/api/tweets/route.js`)
 ```js
