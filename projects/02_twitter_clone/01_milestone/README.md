@@ -122,9 +122,9 @@ export default function Home() {
 ---
 
 ### **4. Navigating to Individual Tweet Pages**
-Next.js supports **file-based dynamic routing**. We create a page `/tweet/[id].js` to display single tweets.
+Next.js supports **file-based dynamic routing**. We create a page `/tweet/[id]/page.js` to display single tweets.
 
-**Example for `/app/tweet/[id].js`:**
+**Example for `/app/tweet/[id]/page.js`:**
 ```javascript
 export default function TweetPage({ params }) {
   return <h1>Tweet ID: {params.id}</h1>;
